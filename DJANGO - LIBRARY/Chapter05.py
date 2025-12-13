@@ -224,3 +224,28 @@ To Use Template Inheritance, You Define A Base Template With Block Tags That Chi
 {% endblock %}'''
 '''This Will Render The Child Template Within The Structure Defined In base.html, Replacing The title And content Blocks With The Child Template'S Content.'''
 #-------------------------------
+
+# 404 Template : Not Found
+
+'''To Create A Custom 404 Error Page In Django, You Need To Create A Template Named 404.html In Your Templates Directory. Django Will Automatically Use This Template When A Page Is Not Found.'''
+# For Example, In 404.html:
+'''<!DOCTYPE html>
+<html>
+<head>
+    <title>Page Not Found</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+        h1 { font-size: 50px; }
+        p { font-size: 20px; }
+        a { color: #007BFF; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>404</h1>
+    <p>Sorry, The Page You Are Looking For Does Not Exist.</p>
+    <a href="{% url 'home' %}">Go Back Home</a>
+</body>
+</html>'''
+'''This Template Will Be Rendered Whenever A User Tries To Access A Page That Does Not Exist On Your Website. You Can Customize The Content And Styling As Needed.'''
+#-------------------------------
