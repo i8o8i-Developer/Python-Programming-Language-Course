@@ -188,3 +188,39 @@ def multiply(value, arg):
 '''{{ some_value|multiply:5 }}'''
 # This Will Multiply some_value By 5 And Render The Result.
 #-------------------------------
+
+'''Inheritance And Template Organization :
+Django Templates Support Template Inheritance, Allowing You To Create A Base Template With Common Layouts And Extend It In Child Templates. This Promotes Code Reusability And Maintains A Consistent Look Across Your Application.
+To Use Template Inheritance, You Define A Base Template With Block Tags That Child Templates Can Override.'''
+
+# For Example, In base.html:
+'''<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}My Site{% endblock %}</title>
+</head>
+<body>
+    <header>
+        {% include "header.html" %}
+    </header>
+    <main>
+        {% block content %}
+        <!-- Default Content -->
+        {% endblock %}
+    </main>
+    <footer>
+        {% include "footer.html" %}
+    </footer>
+</body>
+</html>'''
+# In child_template.html:
+'''{% extends "base.html" %}
+
+{% block title %}Child Page Title{% endblock %}
+
+{% block content %}
+    <h1>Welcome to the Child Page</h1>
+    <p>This is the content of the child page.</p>
+{% endblock %}'''
+'''This Will Render The Child Template Within The Structure Defined In base.html, Replacing The title And content Blocks With The Child Template'S Content.'''
+#-------------------------------
