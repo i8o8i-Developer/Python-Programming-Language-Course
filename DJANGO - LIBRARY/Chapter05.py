@@ -2,29 +2,43 @@
 '''Django Template Language (DTL) Provides A Set Of Built-In Filters And Tags That Allow You To Manipulate Data And Control The Flow Of Your Templates. Here'S An Overview Of Some Commonly Used DTL Filters And Tags:'''
 
 
-# Commonly Used DTL Filters :
+# All Used DTL Filters :
 '''1. Lower : Converts A String To Lowercase.
    Usage : {{ value|lower }}
+
 2. Upper : Converts A String To Uppercase.
     Usage : {{ value|upper }}
+
 3. Title : Converts A String To Title Case.
     Usage : {{ value|title }}
+
 4. Length : Returns The Length Of A String Or List.
     Usage : {{ value|length }}
+
 5. Default : Provides A Default Value If The Variable Is None Or Empty.
     Usage : {{ value|default:"Default Value" }}
+
 6. Date : Formats A Date According To The Given Format String.
     Usage : {{ value|date:"F j, Y" }}
+
 7. Join : Joins A List Into A String With A Given Separator.
     Usage : {{ value|join:", " }}
+
 8. Slice : Slices A List Or String.
     Usage : {{ value|slice:"1:5" }}
+
 9. Safe : Marks A String As Safe For HTML Output.
     Usage : {{ value|safe }}
-10. Truncatechars : Truncates A String To A Specified Number Of Characters.
-    Usage : {{ value|truncatechars:50 }}'''
 
-# Commonly Used DTL Tags :
+10. Truncatechars : Truncates A String To A Specified Number Of Characters.
+    Usage : {{ value|truncatechars:50 }}
+
+11. Add : Adds A Value To A Number.
+    Usage : {{ value|add:10 }}
+    Usage : {{ value|add:"10" }}  # For Strings
+    Usage : {{ First_Value|add:Second_Value }}  # For Variables'''
+
+# All Used DTL Tags :
 '''
 1. If : Conditional Statement To Render Content Based On A Condition.
     Usage :
@@ -77,6 +91,61 @@
 10. Cycle : Cycles Through A List Of Values.
     Usage :
     {% cycle 'odd' 'even' %}
+
+11. Spaceless : Removes Whitespace Between HTML Tags.
+    Usage :
+    {% spaceless %}
+        <div>
+            <p>Some Text</p>
+        </div>
+    {% endspaceless %}
+
+12. Firstof : Outputs The First Non-Empty Variable From A List.
+    Usage :
+    {% firstof var1 var2 var3 "Default Value" %}
+
+13. Regroup : Regroups A List Of Objects By A Common Attribute.
+    Usage :
+    {% regroup list by attribute as grouped_list %}
+    {% for group in grouped_list %}
+        <h2>{{ group.grouper }}</h2>
+        <ul>
+        {% for item in group.list %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    {% endfor %}
+
+14. Filter : Filters A List Based On A Condition.
+    Usage :
+    {% filter force_escape %}
+        {{ variable }}
+    {% endfilter %}
+
+15. Widthratio : Calculates The Width Ratio Of Two Values.
+    Usage :
+    {% widthratio this_value max_value 100 %}
+    This Will Calculate (this_value / max_value) * 100 And Output The Result.
+
+16. Now : Outputs The Current Date And Time.
+    Usage :
+    {% now "Y-m-d H:i" %}
+
+17. Verbose : Outputs A Variable In A More Readable Format.
+    Usage :
+    {% verbose variable %}
+
+18. Time : Formats A Time According To The Given Format String.
+    Usage :
+    {% time "H:i:s" %}
+19. Localtime : Converts A DateTime To The Current Time Zone.
+    Usage :
+    {% localtime on %}
+        {{ datetime_variable }}
+    {% endlocaltime %}
+20. Static : Generates The URL For A Static File.
+    Usage :
+    {% static "Path/To/File.css" %}
 '''
 
 #-------------------------------
