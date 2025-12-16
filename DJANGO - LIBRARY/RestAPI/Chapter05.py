@@ -106,9 +106,10 @@ urlpatterns = [
 '''===================='''
 
 
-All Types Of Filtering In QuerySets
+# All Types Of Filtering In QuerySets
 '''====================
 Django Provides A Variety Of Filtering Options In QuerySets To Retrieve Specific Records Based On Different Conditions. Here Are Some Common Types Of Filtering You Can Use:'''
+
 from django.shortcuts import render
 from .models import Book
 from django.http import JsonResponse
@@ -177,3 +178,108 @@ urlpatterns = [
 ]
 # Now, When You Access The /various-filters/ URL, You Will Get A JSON Response Containing The Filtered Book Records Based On The Different Conditions Specified.
 '''===================='''
+
+# Filetering Based On Date And Time In QuerySets
+'''====================
+Django Provides Several Lookups To Filter QuerySets Based On Date And Time Fields. Here Are Some Common Examples Of How To Filter Based On Date And Time In Django:'''
+
+from django.shortcuts import render
+from .models import Event
+from django.http import JsonResponse
+from django.core.serializers import serialize
+from django.utils import timezone
+
+def filter_events_by_date(request):
+    # Filter Events Happening Today
+    today = timezone.now().date()
+    events_today = Event.objects.filter(date__date=today)
+
+    # Filter Events Happening This Month
+    events_this_month = Event.objects.filter(date__month=today.month, date__year=today.year)
+
+    # Filter Events Happening This Year
+    events_this_year = Event.objects.filter(date__year=today.year)
+
+    # Filter Events Before A Specific Date
+    specific_date = timezone.datetime(2023, 12, 31)
+    events_before_date = Event.objects.filter(date__lt=specific_date)
+
+    # Filter Events After A Specific Date
+    events_after_date = Event.objects.filter(date__gt=specific_date)
+
+    data = {
+        'events_today': serialize('json', events_today),
+        'events_this_month': serialize('json', events_this_month),
+        'events_this_year': serialize('json', events_this_year),
+        'events_before_date': serialize('json', events_before_date),
+        'events_after_date': serialize('json', events_after_date),
+    }
+    return JsonResponse(data)
+
+# models.py
+from django.db import models
+
+class Event(models.Model):
+    name = models.CharField(max_length=200)
+    date = models.DateTimeField()
+    location = models.CharField(max_length=200)
+
+# In This Example, We Define A View Called `filter_events_by_date` That Demonstrates Various Ways To Filter Events Based On Date And Time. We Filter Events Happening Today, This Month, This Year, Before A Specific Date, And After A Specific Date. The Results Are Serialized To JSON And Returned In A JsonResponse.
+
+# To Test This View, You Can Map It To A URL In Your urls.py File:
+
+# urls.py
+from django.urls import path
+from .views import filter_events_by_date
+urlpatterns = [
+    path('filter-events-by-date/', filter_events_by_date, name='filter_events_by_date'),
+]
+# Now, When You Access The /filter-events-by-date/ URL, You Will Get A JSON Response Containing The Filtered Event Records Based On The Date And Time Conditions Specified.
+'''===================='''
+
+# Filtering Based On Related Models In QuerySets
+'''====================
+Django Allows You To Filter QuerySets Based On Related Models Using The Double Underscore (`__`) Notation. This Enables You To Traverse Relationships Between Models And Apply Filters On Related Fields. Here Is An Example Of How To Filter Based On Related Models In Django:'''
+
+from django.shortcuts import render
+from .models import Book
+from django.http import JsonResponse
+from django.core.serializers import serialize
+from django.db.models import Q
+def filter_books_by_author_country(request):
+    # Filter Books Where The Author's Country Is 'USA'
+    books_by_usa_authors = Book.objects.filter(author__country='USA')
+
+    # Filter Books Where The Author's Name Contains 'Smith'
+    books_by_smith_authors = Book.objects.filter(author__name__icontains='Smith')
+
+    data = {
+        'books_by_usa_authors': serialize('json', books_by_usa_authors),
+        'books_by_smith_authors': serialize('json', books_by_smith_authors),
+    }
+    return JsonResponse(data)
+
+# models.py
+from django.db import models
+class Author(models.Model):
+    name = models.CharField(max_length=100)
+    country = models.CharField(max_length=100)
+class Book(models.Model):
+    title = models.CharField(max_length=200)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    publication_year = models.IntegerField()
+    genre = models.CharField(max_length=100)
+# In This Example, We Define A View Called `filter_books_by_author_country` That Filters Books Based On The Country And Name Of Their Related Author Model. The Results Are Serialized To JSON And Returned In A JsonResponse.
+
+# To Test This View, You Can Map It To A URL In Your urls.py File:
+
+# urls.py
+from django.urls import path
+
+from .views import filter_books_by_author_country
+urlpatterns = [
+    path('filter-books-by-author-country/', filter_books_by_author_country, name='filter_books_by_author_country'),
+]
+# Now, When You Access The /filter-books-by-author-country/ URL, You Will Get A JSON Response Containing The Filtered Book Records Based On The Related Author's Country And Name.
+'''===================='''
+
