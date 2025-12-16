@@ -188,7 +188,7 @@ def multiply(value, arg):
 
 
 # This Custom Filter Can Be Used In Templates As Follows:
-{% load custom_filters %}
+''' {% load custom_filters %} '''
 
 '''{{ some_value|multiply:5 }}'''
 # This Will Multiply some_value By 5 And Render The Result.
@@ -252,12 +252,23 @@ To Use Template Inheritance, You Define A Base Template With Block Tags That Chi
     <a href="{% url 'home' %}">Go Back Home</a>
 </body>
 </html>'''
+
 '''This Template Will Be Rendered Whenever A User Tries To Access A Page That Does Not Exist On Your Website. You Can Customize The Content And Styling As Needed.'''
 # How To Connect 404 Template :
 '''To Ensure That Django Uses Your Custom 404.html Template, Make Sure You Have The Following Settings In Your settings.py File:'''
 # In settings.py:
-'''DEBUG = False
-ALLOWED_HOSTS = ['YourDomain.com', 'localhost', '']'''
+DEBUG = False
+ALLOWED_HOSTS = ['YourDomain.com', 'localhost', '']
+
 '''When DEBUG Is Set To False, Django Will Use The 404.html Template For Not Found Errors. Make Sure To Test Your 404 Page By Accessing A Non-Existent URL On Your Site.'''
+
+from django.http import Http404
+from django.shortcuts import render
+def my_view(request):
+    # Some Logic Here
+    if not item_exists:
+        raise Http404("Item Not Found")
+    return render(request, 'My_Template.html', context)
+"Automatically Renders The 404.html Template When An Http404 Exception Is Raised."
 
 #-------------------------------
