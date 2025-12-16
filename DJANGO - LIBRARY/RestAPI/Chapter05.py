@@ -283,3 +283,59 @@ urlpatterns = [
 # Now, When You Access The /filter-books-by-author-country/ URL, You Will Get A JSON Response Containing The Filtered Book Records Based On The Related Author's Country And Name.
 '''===================='''
 
+
+# Filtering In QuerySets Using A Custom filters.py File
+'''====================
+To Organize Your Filtering Logic Better, You Can Create A Custom `filters.py` File In Your Django App. This File Can Contain Functions That Handle Different Filtering Scenarios. Here Is An Example Of How To Implement Filtering In A Custom `filters.py` File:'''
+# filters.py
+import django
+from django import forms
+from .models import Book
+
+class BookFilterForm(django_filters.FilterSet):
+    class Meta:
+        model = Book
+        fields = {
+            'author__name': ['exact', 'icontains'],
+            'publication_year': ['gt', 'lt', 'range'],
+            'genre': ['exact', 'in'],
+        }
+
+# views.py
+from django.shortcuts import render
+from .models import Book
+from .filters import BookFilterForm
+from django.http import JsonResponse
+from django.core.serializers import serialize
+def filter_books(request):
+    book_filter = BookFilterForm(request.GET, queryset=Book.objects.all())
+    filtered_books = book_filter.qs
+
+    data = {
+        'filtered_books': serialize('json', filtered_books),
+    }
+    return JsonResponse(data)
+
+# models.py
+from django.db import models
+class Author(models.Model):
+    name = models.CharField(max_length=100)
+class Book(models.Model):
+    title = models.CharField(max_length=200)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    publication_year = models.IntegerField()
+    genre = models.CharField(max_length=100)
+
+# In This Example, We Create A `BookFilterForm` In The `filters.py` File That Defines Various Filtering Options For The `Book` Model. In The View, We Instantiate The Filter Form With The Request's GET Parameters And Retrieve The Filtered QuerySet. The Results Are Serialized To JSON And Returned In A JsonResponse.
+
+# To Test This View, You Can Map It To A URL In Your urls.py File:
+
+# urls.py
+from django.urls import path
+from .views import filter_books
+urlpatterns = [
+    path('filter-books/', filter_books, name='filter_books'),
+]
+
+# Now, When You Access The /filter-books/ URL With Appropriate Query Parameters, You Will Get A JSON Response Containing The Filtered Book Records Based On The Conditions Specified In The Query Parameters.
+'''===================='''
