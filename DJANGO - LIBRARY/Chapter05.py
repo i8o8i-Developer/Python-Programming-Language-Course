@@ -67,6 +67,11 @@
 5. Include : Includes Another Template Within The Current Template.
     Usage :
     {% include "header.html" %}
+    - Passes The Current Context To The Included Template.
+        Usage With Context :
+        {% include "header.html" with user=user %}
+        Usage Without Context :
+        {% include "header.html" only %}
 
 6. Comment : Adds Comments That Are Not Rendered In The Output.
     Usage :
@@ -248,4 +253,11 @@ To Use Template Inheritance, You Define A Base Template With Block Tags That Chi
 </body>
 </html>'''
 '''This Template Will Be Rendered Whenever A User Tries To Access A Page That Does Not Exist On Your Website. You Can Customize The Content And Styling As Needed.'''
+# How To Connect 404 Template :
+'''To Ensure That Django Uses Your Custom 404.html Template, Make Sure You Have The Following Settings In Your settings.py File:'''
+# In settings.py:
+'''DEBUG = False
+ALLOWED_HOSTS = ['YourDomain.com', 'localhost', '']'''
+'''When DEBUG Is Set To False, Django Will Use The 404.html Template For Not Found Errors. Make Sure To Test Your 404 Page By Accessing A Non-Existent URL On Your Site.'''
+
 #-------------------------------
