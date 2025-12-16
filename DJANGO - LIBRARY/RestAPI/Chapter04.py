@@ -142,6 +142,26 @@ class CustomBookViewSet(viewsets.ModelViewSet):
     serializer_class = BookSerializer
     permission_classes = [IsOwnerOrReadOnly]
 'By Following These Steps, You Can Effectively Implement Permissions In Your Django REST Framework Application, Ensuring That Users Have Appropriate Access To Resources Based On Their Roles And Attributes.'
+
+Option 2 : By Creating A permission.py File
+# permission.py
+from rest_framework.permissions import BasePermission
+class IsOwnerOrReadOnly(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return True
+        return obj.owner == request.user
+# views.py
+from rest_framework import viewsets
+from .models import Book
+from .serializers import BookSerializer
+from .permission import IsOwnerOrReadOnly
+class BookViewSet(viewsets.ModelViewSet):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsOwnerOrReadOnly]
+
+
 #-----------------------------------------------------------------------
 
 'Implementing Throttling In Django REST Framework'
