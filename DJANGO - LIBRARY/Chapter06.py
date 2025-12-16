@@ -24,6 +24,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static']'''
     <script src="{% static 'js/scripts.js' %}"></script>
 </head>
 <body>
+    # Adding Images To Static Folder And Using In Template
     <img src="{% static 'images/logo.png' %}" alt="Logo">
 </body>
 </html>'''
