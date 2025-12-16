@@ -307,14 +307,24 @@ from .models import Book
 from .filters import BookFilterForm
 from django.http import JsonResponse
 from django.core.serializers import serialize
+
+class BookViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
+    filter_class = BookFilterForm
+    
 def filter_books(request):
-    book_filter = BookFilterForm(request.GET, queryset=Book.objects.all())
-    filtered_books = book_filter.qs
+    filter_form = BookFilterForm(request.GET, queryset=Book.objects.all())
+    filtered_books = filter_form.qs
 
     data = {
         'filtered_books': serialize('json', filtered_books),
     }
     return JsonResponse(data)
+
 
 # models.py
 from django.db import models
