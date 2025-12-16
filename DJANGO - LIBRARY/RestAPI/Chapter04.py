@@ -145,8 +145,8 @@ class CustomBookViewSet(viewsets.ModelViewSet):
 
 Option 2 : By Creating A permission.py File
 # permission.py
-from rest_framework.permissions import BasePermission
-class IsOwnerOrReadOnly(BasePermission):
+from rest_framework import permissions
+class IsOwnerOrReadOnly(permissionsBasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in ['GET', 'HEAD', 'OPTIONS']:
             return True
