@@ -349,3 +349,51 @@ urlpatterns = [
 
 # Now, When You Access The /filter-books/ URL With Appropriate Query Parameters, You Will Get A JSON Response Containing The Filtered Book Records Based On The Conditions Specified In The Query Parameters.
 '''===================='''
+
+
+Ordering In QuerySets
+'''====================
+Django Allows You To Order QuerySets Using The `order_by()` Method. You Can Specify One Or More Fields To Order By, And You Can Use A Hyphen (`-`) Prefix To Indicate Descending Order. Here Is An Example Of How To Implement Ordering In A Django View:'''
+
+from django.shortcuts import render
+from .models import Book
+from django.http import JsonResponse
+from django.core.serializers import serialize
+def order_books(request):
+    # Order Books By Publication Year Ascending
+    books_by_year_asc = Book.objects.all().order_by('publication_year')
+
+    # Order Books By Publication Year Descending
+    books_by_year_desc = Book.objects.all().order_by('-publication_year')
+
+    # Order Books By Author Name Ascending, Then By Title Ascending
+    books_by_author_title = Book.objects.all().order_by('author__name', 'title')
+
+    data = {
+        'books_by_year_asc': serialize('json', books_by_year_asc),
+        'books_by_year_desc': serialize('json', books_by_year_desc),
+        'books_by_author_title': serialize('json', books_by_author_title),
+    }
+    return JsonResponse(data)
+
+# models.py
+from django.db import models
+class Author(models.Model):
+    name = models.CharField(max_length=100)
+class Book(models.Model):
+    title = models.CharField(max_length=200)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    publication_year = models.IntegerField()
+    genre = models.CharField(max_length=100)
+# In This Example, We Define A View Called `order_books` That Demonstrates Various Ways To Order Books Based On Publication Year And Author Name. The Results Are Serialized To JSON And Returned In A JsonResponse.
+
+# To Test This View, You Can Map It To A URL In Your urls.py File:
+
+# urls.py
+from django.urls import path
+from .views import order_books
+urlpatterns = [
+    path('order-books/', order_books, name='order_books'),
+]
+# Now, When You Access The /order-books/ URL, You Will Get A JSON Response Containing The Ordered Book Records Based On The Specified Conditions.
+'''===================='''
