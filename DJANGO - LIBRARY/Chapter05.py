@@ -1,274 +1,942 @@
-# Django Template Language (DTL) Filters And Tags :
-'''Django Template Language (DTL) Provides A Set Of Built-In Filters And Tags That Allow You To Manipulate Data And Control The Flow Of Your Templates. Here'S An Overview Of Some Commonly Used DTL Filters And Tags:'''
+# ============================================================================
+# DJANGO TEMPLATE LANGUAGE (DTL) - FILTERS AND TAGS
+# ============================================================================
 
-
-# All Used DTL Filters :
-'''1. Lower : Converts A String To Lowercase.
-   Usage : {{ value|lower }}
-
-2. Upper : Converts A String To Uppercase.
-    Usage : {{ value|upper }}
-
-3. Title : Converts A String To Title Case.
-    Usage : {{ value|title }}
-
-4. Length : Returns The Length Of A String Or List.
-    Usage : {{ value|length }}
-
-5. Default : Provides A Default Value If The Variable Is None Or Empty.
-    Usage : {{ value|default:"Default Value" }}
-
-6. Date : Formats A Date According To The Given Format String.
-    Usage : {{ value|date:"F j, Y" }}
-
-7. Join : Joins A List Into A String With A Given Separator.
-    Usage : {{ value|join:", " }}
-
-8. Slice : Slices A List Or String.
-    Usage : {{ value|slice:"1:5" }}
-
-9. Safe : Marks A String As Safe For HTML Output.
-    Usage : {{ value|safe }}
-
-10. Truncatechars : Truncates A String To A Specified Number Of Characters.
-    Usage : {{ value|truncatechars:50 }}
-
-11. Add : Adds A Value To A Number.
-    Usage : {{ value|add:10 }}
-    Usage : {{ value|add:"10" }}  # For Strings
-    Usage : {{ First_Value|add:Second_Value }}  # For Variables'''
-
-# All Used DTL Tags :
 '''
-1. If : Conditional Statement To Render Content Based On A Condition.
-    Usage :
-    {% if condition %}
-        Content To Render If Condition Is True
-    {% else %}
-        Content To Render If Condition Is False
-    {% endif %}
+Django Template Language (DTL) Provides A Set Of Built-in Filters And Tags
+That Allow You To Manipulate Data And Control The Flow Of Your Templates.
+This Chapter Covers All Commonly Used DTL Features.
+'''
 
-2. For : Loop Through A List Or Queryset.
-    Usage :
-    {% for item in list %}
-        {{ item }}
-    {% endfor %}
+# ============================================================================
+# TEMPLATE FILTERS
+# ============================================================================
 
-3. Block : Defines A Block Of Content That Can Be Overridden In Child Templates.
-    Usage :
-    {% block block_name %}
-        Default Content
-    {% endblock %}
+'''
+Filters Are Used To Modify Variables In Templates.
+Syntax: {{ variable|filter:argument }}
+'''
 
-4. Extends : Inherits From A Parent Template.
-    Usage :
-    {% extends "base.html" %}
+# STRING FILTERS
+'''
+1. lower - Converts String To Lowercase
+   {{ value|lower }}
+   Example: {{ "HELLO"|lower }} → hello
 
-5. Include : Includes Another Template Within The Current Template.
-    Usage :
-    {% include "header.html" %}
-    - Passes The Current Context To The Included Template.
-        Usage With Context :
-        {% include "header.html" with user=user %}
-        Usage Without Context :
-        {% include "header.html" only %}
+2. upper - Converts String To Uppercase
+   {{ value|upper }}
+   Example: {{ "hello"|upper }} → HELLO
 
-6. Comment : Adds Comments That Are Not Rendered In The Output.
-    Usage :
-    {% comment %}
-        This Is A Comment
-    {% endcomment %}
+3. title - Converts String To Title Case
+   {{ value|title }}
+   Example: {{ "hello world"|title }} → Hello World
 
-7. With : Creates A New Context Variable For Use Within A Block.
-    Usage :
+4. capfirst - Capitalizes First Character
+   {{ value|capfirst }}
+   Example: {{ "hello"|capfirst }} → Hello
+
+5. truncatechars - Truncates String To Specified Characters
+   {{ value|truncatechars:50 }}
+   Example: {{ "Long text..."|truncatechars:10 }} → Long te...
+
+6. truncatewords - Truncates To Specified Words
+   {{ value|truncatewords:5 }}
+   Example: {{ "This is a long sentence"|truncatewords:3 }} → This is a...
+
+7. slice - Slices A List Or String
+   {{ value|slice:"1:5" }}
+   Example: {{ "12345"|slice:"1:3" }} → 23
+
+8. join - Joins List Into String With Separator
+   {{ value|join:", " }}
+   Example: {{ my_list|join:" | " }}
+
+9. wordcount - Returns Number Of Words
+   {{ value|wordcount }}
+   Example: {{ "Hello world"|wordcount }} → 2
+
+10. linebreaks - Converts Newlines To HTML <p> And <br> Tags
+    {{ value|linebreaks }}
+
+11. linebreaksbr - Converts Newlines To <br> Tags
+    {{ value|linebreaksbr }}
+
+12. striptags - Removes HTML Tags
+    {{ value|striptags }}
+    Example: {{ "<p>Hello</p>"|striptags }} → Hello
+'''
+
+# NUMERIC FILTERS
+'''
+13. add - Adds Value To Number
+    {{ value|add:10 }}
+    {{ value|add:"10" }}  # For Strings
+    {{ first_value|add:second_value }}  # For Variables
+    Example: {{ 5|add:3 }} → 8
+
+14. divisibleby - Returns True If Divisible By Argument
+    {{ value|divisibleby:3 }}
+    Example: {% if count|divisibleby:2 %}Even{% endif %}
+
+15. floatformat - Formats Floating Point Number
+    {{ value|floatformat }}
+    {{ value|floatformat:2 }}  # 2 Decimal Places
+    Example: {{ 3.14159|floatformat:2 }} → 3.14
+'''
+
+# DATE & TIME FILTERS
+'''
+
+16. date - Formats Date According To Format String
+    {{ value|date:"Y-m-d" }}
+    {{ value|date:"F j, Y" }}
+    Common Formats:
+    - Y: 4-Digit Year (2024)
+    - y: 2-Digit Year (24)
+    - m: Month Number (01-12)
+    - d: Day Of Month (01-31)
+    - F: Month Name (January)
+    - M: Short Month (Jan)
+    - D: Short Day (Mon)
+    Example: {{ today|date:"F d, Y" }} → December 17, 2025
+
+17. time - Formats Time
+    {{ value|time:"H:i" }}
+    Example: {{ now|time:"H:i:s" }} → 14:30:45
+
+18. timesince - Time Since Given Date
+    {{ value|timesince }}
+    Example: {{ post.created_at|timesince }} → 2 hours ago
+
+19. timeuntil - Time Until Given Date
+    {{ value|timeuntil }}
+    Example: {{ event.start_date|timeuntil }} → 3 days
+'''
+
+# LIST & COLLECTION FILTERS
+'''
+20. length - Returns Length Of List Or String
+    {{ value|length }}
+    Example: {{ my_list|length }} → 5
+
+21. first - Returns First Item
+    {{ value|first }}
+    Example: {{ my_list|first }}
+
+22. last - Returns Last Item
+    {{ value|last }}
+    Example: {{ my_list|last }}
+
+23. dictsort - Sorts List Of Dicts By Key
+    {{ value|dictsort:"key_name" }}
+
+24. dictsortreversed - Sorts In Reverse
+    {{ value|dictsortreversed:"key_name" }}
+'''
+
+# OTHER USEFUL FILTERS
+'''
+25. default - Provides Default Value If Variable Is None Or Empty
+    {{ value|default:"No value" }}
+    Example: {{ user.bio|default:"No bio available" }}
+
+26. default_if_none - Default Only If None (Not Empty String)
+    {{ value|default_if_none:"None" }}
+
+27. safe - Marks String As Safe For HTML Output (Doesn't Escape)
+    {{ value|safe }}
+    Example: {{ html_content|safe }}
+
+28. escape - Escapes HTML Characters
+    {{ value|escape }}
+
+29. escapejs - Escapes For Use In JavaScript
+    {{ value|escapejs }}
+
+30. urlencode - URL Encodes String
+    {{ value|urlencode }}
+    Example: {{ "hello world"|urlencode }} → hello%20world
+
+31. slugify - Converts To Slug (URL-Friendly Format)
+    {{ value|slugify }}
+    Example: {{ "Hello World!"|slugify }} → hello-world
+
+32. yesno - Converts Boolean To Custom Text
+    {{ value|yesno:"Yes,No,Maybe" }}
+    Example: {{ is_active|yesno:"Active,Inactive" }}
+
+33. filesizeformat - Formats File Size
+    {{ value|filesizeformat }}
+    Example: {{ 123456789|filesizeformat }} → 117.7 MB
+
+34. pluralize - Returns Plural Suffix
+    {{ count }} item{{ count|pluralize }}
+    {{ count }} box{{ count|pluralize:"es" }}
+    Example: 1 item, 2 items
+'''
+
+
+# ============================================================================
+# TEMPLATE TAGS
+# ============================================================================
+
+'''
+Template Tags Provide Logic And Control Flow In Templates.
+Syntax: {% tag_name arguments %}
+'''
+
+# CONDITIONAL TAGS
+'''
+1. if / elif / else - Conditional Rendering
+   {% if condition %}
+       Content If True
+   {% elif other_condition %}
+       Content If Other_Condition True
+   {% else %}
+       Content If All Conditions False
+   {% endif %}
+   
+   Examples Of Conditions:
+   {% if user.is_authenticated %}
+   {% if age >= 18 %}
+   {% if score > 90 and passed %}
+   {% if name == "John" or name == "Jane" %}
+   {% if not is_deleted %}
+   {% if items %}  # True if not empty
+   {% if value in list %}
+   {% if "admin" in user.groups %}
+
+2. ifchanged - Render Only If Value Changed From Last Iteration
+   {% for item in items %}
+       {% ifchanged item.category %}
+           <h2>{{ item.category }}</h2>
+       {% endifchanged %}
+       <p>{{ item.name }}</p>
+   {% endfor %}
+'''
+
+# LOOP TAGS
+'''
+3. for - Loop Through Iterable
+   {% for item in list %}
+       {{ item }}
+   {% empty %}
+       No Items Found
+   {% endfor %}
+   
+   Loop Variables:
+   - {{ forloop.counter }}      # 1-Indexed Counter
+   - {{ forloop.counter0 }}     # 0-Indexed Counter
+   - {{ forloop.revcounter }}   # Reverse Counter
+   - {{ forloop.revcounter0 }}  # Reverse 0-Indexed
+   - {{ forloop.first }}        # True On First Iteration
+   - {{ forloop.last }}         # True On Last Iteration
+   - {{ forloop.parentloop }}   # Parent Loop In Nested Loops
+   
+   Example:
+   {% for item in items %}
+       <tr class="{% if forloop.first %}first{% endif %}">
+           <td>{{ forloop.counter }}. {{ item.name }}</td>
+       </tr>
+   {% endfor %}
+'''
+
+# TEMPLATE INHERITANCE TAGS
+'''
+4. extends - Inherit From Parent Template
+   {% extends "base.html" %}
+   {% extends parent_template_variable %}
+   
+   Must Be First Tag In Template.
+
+5. block - Define Overridable Content Block
+   {% block title %}Default Title{% endblock %}
+   {% block content %}
+       Default Content
+   {% endblock %}
+   
+   Override In Child Template:
+   {% extends "base.html" %}
+   {% block title %}Page Title{% endblock %}
+   {% block content %}
+       <h1>Page Content</h1>
+   {% endblock %}
+   
+   Use Parent Content:
+   {% block content %}
+       {{ block.super }}
+       Additional Content
+   {% endblock %}
+
+6. include - Include Another Template
+   {% include "header.html" %}
+   {% include "nav.html" with active='home' %}
+   {% include "snippet.html" with user=user only %}
+   
+   The 'only' Keyword Prevents Passing Current Context.
+'''
+
+# URL & STATIC TAGS
+'''
+7. url - Generate URL For Named View
+   {% url 'view_name' %}
+   {% url 'view_name' arg1 arg2 %}
+   {% url 'namespace:view_name' %}
+   {% url 'view_name' key=value %}
+   
+   Examples:
+   <a href="{% url 'home' %}">Home</a>
+   <a href="{% url 'article_detail' article.id %}">Read More</a>
+   <a href="{% url 'blog:post_detail' slug=post.slug %}">View Post</a>
+
+8. static - Generate URL For Static File
+   {% load static %}
+   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+   <img src="{% static 'images/logo.png' %}">
+   <script src="{% static 'js/main.js' %}"></script>
+
+9. get_static_prefix - Get Static URL Prefix
+   {% load static %}
+   {% get_static_prefix as STATIC_PREFIX %}
+   <img src="{{ STATIC_PREFIX }}images/logo.png">
+
+10. get_media_prefix - Get Media URL Prefix
+    {% load static %}
+    {% get_media_prefix as MEDIA_PREFIX %}
+    <img src="{{ MEDIA_PREFIX }}{{ user.avatar }}">
+'''
+
+# VARIABLE MANIPULATION TAGS
+'''
+11. with - Create Temporary Variable
     {% with total=business.employees.count %}
         Total Employees: {{ total }}
+        Active: {{ total|subtract:inactive }}
+    {% endwith %}
+    
+    Multiple Variables:
+    {% with alpha=1 beta=2 %}
+        {{ alpha }} and {{ beta }}
     {% endwith %}
 
-8. Url : Generates A URL For A Given View Name.
-    Usage :
-    {% url 'view_name' arg1 arg2 %}
-
-9. Load : Loads Custom Template Tags And Filters From A Specified Module.
-    Usage :
+12. load - Load Custom Template Tags/Filters
+    {% load static %}
     {% load custom_tags %}
+    {% load i18n %}
 
-10. Cycle : Cycles Through A List Of Values.
-    Usage :
-    {% cycle 'odd' 'even' %}
+13. csrf_token - Add CSRF Protection Token
+    <form method="post">
+        {% csrf_token %}
+        <!-- Form Fields -->
+    </form>
+'''
 
-11. Spaceless : Removes Whitespace Between HTML Tags.
-    Usage :
-    {% spaceless %}
-        <div>
-            <p>Some Text</p>
-        </div>
-    {% endspaceless %}
+# ITERATION & ORGANIZATION TAGS
+'''
+14. cycle - Cycle Through Values
+    {% for row in rows %}
+        <tr class="{% cycle 'odd' 'even' %}">
+            <td>{{ row }}</td>
+        </tr>
+    {% endfor %}
+    
+    With Named Cycles:
+    {% for item in items %}
+        {% cycle 'row1' 'row2' as rowcolors %}
+    {% endfor %}
 
-12. Firstof : Outputs The First Non-Empty Variable From A List.
-    Usage :
-    {% firstof var1 var2 var3 "Default Value" %}
-
-13. Regroup : Regroups A List Of Objects By A Common Attribute.
-    Usage :
-    {% regroup list by attribute as grouped_list %}
-    {% for group in grouped_list %}
-        <h2>{{ group.grouper }}</h2>
+15. regroup - Regroup List By Attribute
+    {% regroup products by category as product_list %}
+    {% for category in product_list %}
+        <h2>{{ category.grouper }}</h2>
         <ul>
-        {% for item in group.list %}
-            <li>{{ item }}</li>
+        {% for item in category.list %}
+            <li>{{ item.name }}</li>
         {% endfor %}
         </ul>
     {% endfor %}
 
-14. Filter : Filters A List Based On A Condition.
-    Usage :
-    {% filter force_escape %}
-        {{ variable }}
-    {% endfilter %}
+16. firstof - Output First Non-Empty Variable
+    {% firstof var1 var2 var3 "default value" %}
+    
+    Example:
+    {% firstof user.nickname user.first_name user.username %}
 
-15. Widthratio : Calculates The Width Ratio Of Two Values.
-    Usage :
-    {% widthratio this_value max_value 100 %}
-    This Will Calculate (this_value / max_value) * 100 And Output The Result.
-
-16. Now : Outputs The Current Date And Time.
-    Usage :
-    {% now "Y-m-d H:i" %}
-
-17. Verbose : Outputs A Variable In A More Readable Format.
-    Usage :
-    {% verbose variable %}
-
-18. Time : Formats A Time According To The Given Format String.
-    Usage :
-    {% time "H:i:s" %}
-19. Localtime : Converts A DateTime To The Current Time Zone.
-    Usage :
-    {% localtime on %}
-        {{ datetime_variable }}
-    {% endlocaltime %}
-20. Static : Generates The URL For A Static File.
-    Usage :
-    {% static "Path/To/File.css" %}
+17. spaceless - Remove Whitespace Between HTML Tags
+    {% spaceless %}
+        <div>
+            <p>Text</p>
+        </div>
+    {% endspaceless %}
+    
+    Output: <div><p>Text</p></div>
 '''
 
-#-------------------------------
-'''Variable Injection And Output Escaping :
-Django Templates Automatically Escape Variables To Prevent Cross-Site Scripting (XSS) Attacks. You Can Use The Safe Filter To Mark A Variable As Safe If You Are Sure It Does Not Contain Malicious Content. '''
+# COMMENT TAGS
+'''
+18. comment - Multi-Line Comment
+    {% comment %}
+        This Is A Comment That Won't Be Rendered.
+        Can Span Multiple Lines.
+    {% endcomment %}
+    
+    Single-Line Comment:
+    {# This Is A Single Line Comment #}
+'''
 
-# For Example:   
-{{ user_input|safe }}
-'''This Will Render The user_input Variable Without Escaping HTML Characters.
-Remember To Use The Safe Filter Cautiously, As It Can Introduce Security Risks If The Content Is Not Properly Sanitized.'''
+# ADVANCED TAGS
+'''
+19. now - Display Current Date/Time
+    {% now "Y-m-d H:i:s" %}
+    {% now "F j, Y" %}
+    
+    Store In Variable:
+    {% now "Y" as current_year %}
+    Copyright {{ current_year }}
 
-'''Also, You Can Use Double Curly Braces To Inject Variables Into Your Template.'''
-# For Example:
-<p>{{ variable_name }}</p>
-'''This Will Output The Value Of variable_name In The Rendered HTML.'''
+20. filter - Apply Filter To Block Content
+    {% filter lower %}
+        THIS WILL BE LOWERCASE
+    {% endfilter %}
+    
+    {% filter linebreaksbr %}
+        Line 1
+        Line 2
+    {% endfilter %}
 
-'''Output Escaping Is Enabled By Default In Django Templates, So Any HTML Special Characters In The Variable Will Be Converted To Their Corresponding HTML Entities. '''
-# For Example:
-{{ "<script>alert('XSS')</script>" }}
-'''Will Be Rendered As :
-[  &lt;script&gt;alert(&#39;XSS&#39;)&lt;/script&gt;  ]
+21. autoescape - Control Automatic HTML Escaping
+    {% autoescape off %}
+        {{ html_content }}
+    {% endautoescape %}
+    
+    {% autoescape on %}
+        {{ user_input }}
+    {% endautoescape %}
+
+22. verbatim - Render Content Without Template Processing
+    {% verbatim %}
+        {{angular_variable}}
+        {% django_tag %}
+    {% endverbatim %}
+    
+    Useful For JavaScript Templates.
+
+23. widthratio - Calculate Ratios For Scaling
+    {% widthratio this_value max_value target_width %}
+
+    Example - Progress Bar:
+    <div style="width: {% widthratio score 100 200 %}px">
+    
+24. templatetag - Output Template Syntax Characters
+    {% templatetag openblock %}  → {%
+    {% templatetag closeblock %} → %}
+    {% templatetag openvariable %} → {{
+    {% templatetag closevariable %} → }}
+    {% templatetag openbrace %} → {
+    {% templatetag closebrace %} → }
+    {% templatetag opencomment %} → {#
+    {% templatetag closecomment %} → #}
+'''
+
+# LOCALIZATION TAGS
+'''
+25. localize - Control Localization
+    {% load l10n %}
+    {% localize on %}
+        {{ value }}
+    {% endlocalize %}
+
+26. timezone - Control Timezone
+    {% load tz %}
+    {% timezone "America/New_York" %}
+        {{ datetime }}
+    {% endtimezone %}
+
+27. localtime - Enable/Disable Conversion To Local Time
+    {% load tz %}
+    {% localtime on %}
+        {{ datetime }}
+    {% endlocaltime %}
+
+28. trans - Translate Text
+    {% load i18n %}
+    {% trans "Hello" %}
+    
+29. blocktrans - Translate Block
+    {% load i18n %}
+    {% blocktrans %}
+        This Is A Paragraph To Translate.
+    {% endblocktrans %}
+'''
+
+
+# ============================================================================
+# VARIABLE INJECTION AND OUTPUT ESCAPING
+# ============================================================================
+
+'''
+Django Templates Automatically Escape Variables To Prevent Cross-Site Scripting (XSS) Attacks.
+'''
+
+# Injecting Variables
+'''
+Use Double Curly Braces To Inject Variables:
+    <p>{{ variable_name }}</p>
+    <p>{{ user.username }}</p>
+    <p>{{ product.price }}</p>
+    
+Access Nested Attributes:
+    {{ user.profile.bio }}
+    {{ book.author.name }}
+    
+Access Dictionary Keys:
+    {{ data.key }}
+    {{ data.0 }}  # First item in list
+    
+Call Methods (No Parentheses):
+    {{ user.get_full_name }}
+    {{ article.get_absolute_url }}
+'''
+
+# Auto-Escaping
+'''
+Django Automatically Escapes HTML Special Characters:
+
+Input:
+    {{ "<script>alert('XSS')</script>" }}
+
+Output:
+    &lt;script&gt;alert(&#39;XSS&#39;)&lt;/script&gt;
+
 This Prevents The Script From Being Executed In The Browser.
-If You Want To Disable Escaping For A Specific Variable, You Can Use The Safe Filter As Shown Above.'''
+'''
 
-#-------------------------------
-'''Custom Template Tags And Filters :
-Django Allows You To Create Custom Template Tags And Filters To Extend The Functionality Of The Template Language. You Can Define Your Own Logic And Reuse It Across Multiple Templates.
-To Create A Custom Filter, You Need To Create A templatetags Directory Inside Your App, Create A Python Module, And Define Your Filter Using The register.filter Decorator.'''
-# For Example:
+# Disabling Auto-Escape (Use With Caution!)
+'''
+Method 1: safe Filter
+    {{ user_input|safe }}
+    {{ html_content|safe }}
+
+Method 2: autoescape Tag
+    {% autoescape off %}
+        {{ html_content }}
+    {% endautoescape %}
+
+WARNING: Only Use Safe or Autoescape Off When You're Absolutely Sure 
+The Content Doesn't Contain Malicious Code. Never Use With User-Generated Content!
+'''
+
+# When To Use Safe
+'''
+✓ Good Use Cases:
+- Displaying Sanitized HTML From A WYSIWYG Editor
+- Rendering Pre-Validated HTML From Database
+- Displaying HTML You've Generated Yourself
+
+✗ Never Use Safe With:
+- User Input That Hasn't Been Sanitized
+- Data From External Sources
+- Form Submissions
+'''
+
+# Escaping Inside JavaScript
+'''
+Use Escapejs Filter For JavaScript Contexts:
+    <script>
+        var message = "{{ message|escapejs }}";
+        var data = "{{ user_input|escapejs }}";
+    </script>
+'''
+
+# ============================================================================
+# CUSTOM TEMPLATE TAGS AND FILTERS
+# ============================================================================
+
+'''
+Django allows you to create custom template Tags and Filters
+To Extend Template Functionality.
+'''
+
+# Creating Custom Filters
+'''
+1. Create A Templatetags Directory In Your App:
+    myapp/
+        templatetags/
+            __init__.py
+            custom_filters.py
+
+2. Define Your Filter In custom_filters.py:
+'''
+
 from django import template
 register = template.Library()
+
 @register.filter
 def multiply(value, arg):
-    return value * arg
+    """Multiply The Value By The Argument"""
+    try:
+        return value * arg
+    except (ValueError, TypeError):
+        return ''
 
+@register.filter
+def divide(value, arg):
+    """Divide The Value By The Argument"""
+    try:
+        return value / arg
+    except (ValueError, TypeError, ZeroDivisionError):
+        return ''
 
-# This Custom Filter Can Be Used In Templates As Follows:
-''' {% load custom_filters %} '''
+@register.filter(name='currency')
+def format_currency(value):
+    """Format Value As Currency"""
+    try:
+        return f"${value:,.2f}"
+    except (ValueError, TypeError):
+        return value
 
-'''{{ some_value|multiply:5 }}'''
-# This Will Multiply some_value By 5 And Render The Result.
-#-------------------------------
+'''
+3. Use In Templates:
+    {% load custom_filters %}
+    
+    {{ price|multiply:2 }}
+    {{ total|divide:count }}
+    {{ amount|currency }}
+'''
 
-'''Inheritance And Template Organization :
-Django Templates Support Template Inheritance, Allowing You To Create A Base Template With Common Layouts And Extend It In Child Templates. This Promotes Code Reusability And Maintains A Consistent Look Across Your Application.
-To Use Template Inheritance, You Define A Base Template With Block Tags That Child Templates Can Override.'''
+# Creating Simple Tags
+'''
+1. In The Same custom_filters.py File:
+'''
 
-# For Example, In base.html:
-'''<!DOCTYPE html>
-<html>
+@register.simple_tag
+def get_current_time(format_string):
+    """Return Current Time Formatted"""
+    from datetime import datetime
+    return datetime.now().strftime(format_string)
+
+@register.simple_tag
+def multiply_values(a, b, c):
+    """Multiply Three Values"""
+    return a * b * c
+
+'''
+2. Use In Templates:
+    {% load custom_filters %}
+    
+    Current Time: {% get_current_time "%Y-%m-d %H:%M:%S" %}
+    Result: {% multiply_values 2 3 4 %}
+'''
+
+# Creating Inclusion Tags
+'''
+Inclusion Tags Render A Template With Context:
+
+1. Define In custom_filters.py:
+'''
+
+@register.inclusion_tag('myapp/latest_posts.html')
+def show_latest_posts(count=5):
+    """Display Latest Posts"""
+    from myapp.models import Post
+    posts = Post.objects.order_by('-created_at')[:count]
+    return {'posts': posts}
+
+'''
+2. Create Template myapp/templates/myapp/latest_posts.html:
+    <ul>
+    {% for post in posts %}
+        <li>{{ post.title }}</li>
+    {% endfor %}
+    </ul>
+
+3. Use In Templates:
+    {% load custom_filters %}
+    {% show_latest_posts 10 %}
+'''
+
+# ============================================================================
+# TEMPLATE INHERITANCE AND ORGANIZATION
+# ============================================================================
+
+'''
+Template Inheritance Promotes Code Reusability And Maintains
+A Consistent Look Across Your Application.
+'''
+
+# Base Template Pattern
+'''
+Create A Base Template With Common Layout:
+
+File: templates/base.html
+'''
+BASE_TEMPLATE = '''<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>{% block title %}My Site{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Website{% endblock %}</title>
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <header>
-        {% include "header.html" %}
+        {% include "includes/navbar.html" %}
     </header>
+    
     <main>
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
         {% block content %}
-        <!-- Default Content -->
+        <!-- Page content goes here -->
         {% endblock %}
     </main>
+    
     <footer>
-        {% include "footer.html" %}
+        {% include "includes/footer.html" %}
     </footer>
+    
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
 </body>
-</html>'''
-# In child_template.html:
-'''{% extends "base.html" %}
+</html>
+'''
 
-{% block title %}Child Page Title{% endblock %}
+# Child Template Pattern
+'''
+File: templates/myapp/page.html
+'''
+CHILD_TEMPLATE = '''{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Page Title - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/page-specific.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h1>Welcome to the Child Page</h1>
-    <p>This is the content of the child page.</p>
-{% endblock %}'''
-'''This Will Render The Child Template Within The Structure Defined In base.html, Replacing The title And content Blocks With The Child Template'S Content.'''
-#-------------------------------
+<div class="container">
+    <h1>Welcome to My Page</h1>
+    <p>This is page-specific content.</p>
+    
+    {% for item in items %}
+        <div class="item">{{ item.name }}</div>
+    {% empty %}
+        <p>No items available.</p>
+    {% endfor %}
+</div>
+{% endblock %}
 
-# 404 Template : Not Found
+{% block extra_js %}
+<script src="{% static 'js/page-specific.js' %}"></script>
+{% endblock %}
+'''
 
-'''To Create A Custom 404 Error Page In Django, You Need To Create A Template Named 404.html In Your Templates Directory. Django Will Automatically Use This Template When A Page Is Not Found.'''
-# For Example, In 404.html:
-'''<!DOCTYPE html>
+# Multi-Level Inheritance
+'''
+You Can Have Multiple Levels Of Inheritance:
+
+base.html (Site-Wide Base)
+    ↓
+section_base.html (Section-Specific Base)
+    ↓
+page.html (Specific Page)
+File: templates/blog/base_blog.html
+'''
+SECTION_BASE = '''{% extends "base.html" %}
+
+{% block content %}
+<div class="blog-layout">
+    <aside class="sidebar">
+        {% block sidebar %}
+        {% include "blog/sidebar.html" %}
+        {% endblock %}
+    </aside>
+    
+    <article class="main-content">
+        {% block blog_content %}
+        {% endblock %}
+    </article>
+</div>
+{% endblock %}
+'''
+
+'''
+File: templates/blog/post_detail.html
+'''
+POST_TEMPLATE = '''{% extends "blog/base_blog.html" %}
+
+{% block blog_content %}
+<h1>{{ post.title }}</h1>
+<p class="meta">By {{ post.author }} on {{ post.created_at|date:"F d, Y" }}</p>
+<div class="content">
+    {{ post.content|safe }}
+</div>
+{% endblock %}
+'''
+
+# ============================================================================
+# CUSTOM 404 ERROR PAGE
+# ============================================================================
+
+'''
+Create Custom Error Pages For Better User Experience.
+'''
+
+# 404 Template
+'''
+File: templates/404.html
+'''
+ERROR_404 = '''<!DOCTYPE html>
 <html>
 <head>
     <title>Page Not Found</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-        h1 { font-size: 50px; }
-        p { font-size: 20px; }
-        a { color: #007BFF; text-decoration: none; }
-        a:hover { text-decoration: underline; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        h1 {
+            font-size: 100px;
+            margin: 0;
+        }
+        p {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        a {
+            color: white;
+            text-decoration: none;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+        a:hover {
+            background: white;
+            color: #667eea;
+        }
     </style>
 </head>
 <body>
     <h1>404</h1>
-    <p>Sorry, The Page You Are Looking For Does Not Exist.</p>
+    <p>Oops! The Page You're Looking For Doesn't Exist.</p>
+    <p>{{ exception }}</p>
     <a href="{% url 'home' %}">Go Back Home</a>
 </body>
-</html>'''
+</html>
+'''
 
-'''This Template Will Be Rendered Whenever A User Tries To Access A Page That Does Not Exist On Your Website. You Can Customize The Content And Styling As Needed.'''
-# How To Connect 404 Template :
-'''To Ensure That Django Uses Your Custom 404.html Template, Make Sure You Have The Following Settings In Your settings.py File:'''
-# In settings.py:
-DEBUG = False
-ALLOWED_HOSTS = ['YourDomain.com', 'localhost', '']
+# Enable Custom 404 Page
+'''
+In settings.py:
+    DEBUG = False
+    ALLOWED_HOSTS = ['yourdomain.com', 'localhost', '127.0.0.1']
 
-'''When DEBUG Is Set To False, Django Will Use The 404.html Template For Not Found Errors. Make Sure To Test Your 404 Page By Accessing A Non-Existent URL On Your Site.'''
-
-from django.http import Http404
+In urls.py:
+'''
+URL_404_HANDLER = '''from django.conf.urls import handler404
 from django.shortcuts import render
-def my_view(request):
-    # Some Logic Here
-    if not item_exists:
-        raise Http404("Item Not Found")
-    return render(request, 'My_Template.html', context)
-"Automatically Renders The 404.html Template When An Http404 Exception Is Raised."
 
-#-------------------------------
+def custom_404(request, exception):
+    return render(request, '404.html', status=404)
+
+handler404 = custom_404
+'''
+
+# Other Error Pages
+'''
+You Can Create Custom Pages For Other Errors:
+
+- 400.html - Bad Request
+- 403.html - Permission Denied
+- 404.html - Page Not Found
+- 500.html - Server Error
+
+In urls.py:
+    from django.conf.urls import handler400, handler403, handler404, handler500
+    
+    handler400 = 'myapp.views.custom_400'
+    handler403 = 'myapp.views.custom_403'
+    handler404 = 'myapp.views.custom_404'
+    handler500 = 'myapp.views.custom_500'
+'''
+
+# ============================================================================
+# BEST PRACTICES
+# ============================================================================
+
+'''
+1. Keep Logic Out of Templates
+   - Move Complex Logic To Views Or Model Methods
+   - Templates Should Focus On Presentation
+   
+2. Use Template Inheritance
+   - Create Base Templates For Common Layouts
+   - Override Only Necessary Blocks
+   
+3. Organize Templates by App
+   - templates/appname/template.html
+   - Prevents Naming Conflicts
+   
+4. Use Includes for Reusable Components
+   - Navbar, Footer, Sidebar, Etc.
+   - Keep Templates DRY (Don't Repeat Yourself)
+   
+5. Be Careful with |safe Filter
+   - Only Use With Trusted Content
+   - Sanitize User Input Before Marking Safe
+   
+6. Use Meaningful Block Names
+   - {% block content %} Instead Of {% block c %}
+   - Makes Templates Self-Documenting
+   
+7. Comment Complex Template Logic
+   - {# This Loop Displays Featured Products #}
+   - Helps Future Maintainers
+   
+8. Load Static Files Properly
+   - Always Use {% Load Static %} And {% Static %}
+   - Don't Hardcode Static URLs
+   
+9. Use Context Processors Wisely
+   - For Data Needed Across Many Templates
+   - Add To TEMPLATES OPTIONS Context_processors
+   
+10. Test Your Templates
+    - Test Template Rendering In Views
+    - Verify Filter And Tag Behavior
+'''
+
+# ============================================================================
+# QUICK TIPS
+# ============================================================================
+
+'''
+- Use {% spaceless %} For HTML Email Templates
+- Remember: Template Tags Use {% %}, Variables Use {{ }}
+- Filters Can Be Chained: {{ Value|Lower|Truncatewords:5 }}
+- Use {% lorem %} For Placeholder Text During Development
+- {% debug %} Shows Available Context In DEBUG Mode
+- {{ Variable|Pprint }} Pretty-Prints Complex Objects
+- Use {% widthratio %} For Responsive Elements
+- {% regroup %} Is Perfect For Categorized Lists
+'''
